@@ -1,0 +1,559 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include "ArgumentManager.h"
+
+using namespace std;
+
+struct Node {
+    int data; // int data stored in node
+    Node* next = nullptr; // pointer to next node
+    Node *prev = nullptr; // pointer to prev node
+
+    Node(int value) : data(value), next(nullptr), prev(nullptr) {} // initialize nodes
+
+};
+
+class DLL {
+
+public:
+    Node* head; // pointer to first node
+    Node* tail; // pointer to last node
+
+    DLL() : head(nullptr), tail(nullptr) {} // initialize list
+
+
+    // insert into DLL
+    void insert(int value) {
+        Node* nn = new Node(value);   // new node with value in node
+        if (!head) {                  // if list empty
+            head = nn;                  // set to new node
+            tail = nn;
+        }
+        else {                        // if not empty
+            tail->next = nn;            // tail to next node
+            nn->prev = tail;            // new node to current tail
+            tail = nn;                  // tail to new node
+        }
+    }
+
+    void display(ofstream &file) {
+        Node* current = head;         // head of list
+        file << "[";
+        while (current) {                // until EOL
+            file << current->data;      // print data on current node
+            if (current->next) {           // If there next node
+                file << ",";              // print comma
+
+            }
+            current = current->next;      // move to next node
+           
+        }
+        file << "]" << endl;
+
+    }
+
+    void swap(Node* no1, Node* no2) {
+        Node* p1 = no1->prev;
+        Node* p2 = no2->prev;
+        Node* n1 = no1->next;
+        Node* n2 = no2->next;
+
+        if (no1 == no2) {
+            return;
+        }
+        else if (no1 == head && no2->next != nullptr) {
+
+            if (n1->next == n2) {
+                //disconnect node2 from prev
+                p2->next = nullptr;
+                no2->prev = nullptr;
+                //disconnect node2 from next
+                n2->prev = nullptr;
+                no2->next = nullptr;
+
+                //disconnect node1 from next
+                no1->next = nullptr;
+                n1->prev = nullptr;
+
+                no2->prev = nullptr;
+               
+                no2->next = no1;
+                no1->prev = no2;
+
+                no1->next = n2;//
+                n2->prev = no1;//
+               
+                head = no2;
+
+               return;
+
+           }
+            else {
+                //disconnect node2 from prev
+                p2->next = nullptr;
+                no2->prev = nullptr;
+                //disconnect node2 from next
+                n2->prev = nullptr;
+                no2->next = nullptr;
+
+                //disconnect node1 from next
+                no1->next = nullptr;
+                n1->prev = nullptr;
+                no2->next = n1;
+                n1->prev = no2;
+
+
+                p2->next = no1;
+                no1->prev = p2;
+            }
+
+            no1->next = n2; //
+            n2->prev = no1; //
+
+            head = no2;//
+            return;
+        }
+        else if (no1 == head && no2->next == nullptr) {
+           
+
+            if (no1->next == no2) {
+                p2->next = nullptr;
+                no2->prev = nullptr;
+
+                //disconnect node1 from next
+                no1->next = nullptr;
+                n1->prev = nullptr;
+               
+                no2->prev = p1;
+
+                no2->next = no1;
+                no1->prev = no2;
+
+                no1->next = n2;
+
+                head = no2;
+             
+            }
+            else {
+                p2->next = nullptr;
+                no2->prev = nullptr;
+
+                //disconnect node1 from next
+                no1->next = nullptr;
+                n1->prev = nullptr;
+
+                p2->next = no1;
+                no1->prev = p2;
+
+                no2->next = n1;//
+                n1->prev = no2;//
+               
+                head = no2;//
+               
+            }
+           
+        }
+        else if (no1 != head && no2->next == nullptr) {
+            if (no1->next == no2) {
+                p1->next = nullptr;
+                no1->prev = nullptr;
+                //disconnect node1 from next
+                n1->prev = nullptr;
+                n1->next = nullptr;
+
+                //disconnect node2 from prev
+                p2->next = nullptr;
+                no2->prev = nullptr;
+                //disconnect node2 from next
+                no2->next = nullptr;
+
+              // n2->next = nullptr;
+               
+                no2->prev = p1;//
+                p1->next = no2;//
+               
+                no2->next = no1;
+                no1->prev = no2;
+               
+                no1->next = n2;
+                return;
+               
+            }
+            else {
+               
+                p1->next = nullptr;
+                no1->prev = nullptr;
+                //disconnect node1 from next
+                n1->prev = nullptr;
+                no1->next = nullptr;
+
+                //disconnect node2 from prev
+                p2->next = nullptr;
+                no2->prev = nullptr;
+                //disconnect node2 from next
+                no2->next = nullptr;
+
+                no2->next = n1;
+                n1->prev = no2;
+
+                p2->next = no1;
+                no1->prev = p2;
+            }
+            p1->next = no2; //
+            no2->prev = p1; //
+
+        }
+        else if(no1 != head && no2->next != nullptr) {
+            if (no1->next == no2) {
+                p1->next = nullptr;//
+                no1->prev = nullptr;//
+                //disconnect node1 from next
+                n1->prev = nullptr;
+                no1->next = nullptr;
+
+                //disconnect node2 from prev
+                p2->next = nullptr;
+                no2->prev = nullptr;//
+                //disconnect node2 from next
+                n2->prev = nullptr;
+                no2->next = nullptr;//
+             
+                no2->prev = p1;//
+                p1->next = no2;//
+               
+               
+                no2->next = no1;
+                no1->prev = no2;
+
+               no1->next = n2;//
+                n2->prev = no1;//
+                return;
+               
+            }
+            else {
+               
+                p1->next = nullptr;//
+                no1->prev = nullptr;//
+                //disconnect node1 from next
+                n1->prev = nullptr;
+                no1->next = nullptr;
+
+                //disconnect node2 from prev
+                p2->next = nullptr;
+                no2->prev = nullptr;//
+                //disconnect node2 from next
+                n2->prev = nullptr;
+                no2->next = nullptr;//
+
+                no2->next = n1;
+                n1->prev = no2;
+
+                p2->next = no1;
+                no1->prev = p2;
+            }
+           
+            no2->prev = p1;  //
+            p1->next = no2; //
+
+            p2->next = no1;
+           no1->prev = p2;
+
+            no1->next = n2; //
+            n2->prev = no1; //
+       
+        }
+    }
+
+
+
+    void selection(ofstream &file) {
+        if (!head) return; // if list is empty
+
+        Node* curr = head;   // pointer to traverse list
+        Node* smol = curr;    //curr pointer is min
+        Node* find = curr->next;
+        while (curr->next) {        // loop until eol
+                smol = curr;    //curr pointer is min
+            find = curr->next; // find smallest value in unsorted list
+
+            while (find) {
+                if (find->data < smol->data) {
+                    smol = find;
+                }
+                find = find->next;
+           
+            }
+           
+            swap(curr, smol);
+           
+           
+            display(file);
+            curr = smol->next;  
+            // next unsorted
+
+        }
+       // display();
+       
+
+    }
+
+    void insertion(ofstream &file) {
+        if (!head) return;      // if list empty
+
+        Node* curr = head->next;      // second element in list
+        while (curr) {                  // loop through unsorted
+            Node* key = curr;            // store curr as key
+            curr = curr->next;      // pointer to go through sorted
+
+            while ((key && key->prev) && key->data < key->prev->data) {   // find pos for key insertion
+                swap(key->prev, key);
+
+ 
+            }
+            display(file);
+           // curr = key->next; // next element in unsorted
+        }
+
+    }
+
+    void bubble(ofstream& file) {
+        if (!head) return; // if list is empty
+
+        bool swaps;      // if swaps
+        Node* curr = head;        // pointer to curr to traverse
+        Node* tmp = head;  // temp pointer to end of sorted part
+        int count = 0;
+        while (tmp) {
+            tmp = tmp->next;
+            count++;
+        }
+        tmp = head;
+       
+        for (int i = 0; i < count - 1 && curr; i++) {
+            swaps = false;      // swapped as false
+            curr = head;        // start from head of list
+
+            for (int j = 0; j < count - 1 && curr; j++) {
+                if (curr->data > curr->next->data) { // loop until end of sorted part
+                    tmp = curr->next;
+                    swap(curr, tmp);
+                    curr = tmp->next;
+                }
+                else {
+                    curr = curr->next;
+                }
+               
+                      //move to next element
+               
+            }
+
+            display(file);
+            //tmp = curr;    // end of sorted part
+        }
+   // continue until no more swaps
+
+    }
+
+
+    Node* msort(Node* node) {
+        if (!node || !node->next) return node;
+
+        Node* middle = getmid(node); // get middle
+        Node* NTM = middle->next;  // next node after middle
+        middle->next = nullptr;   //split list
+
+        Node* l = msort(node);    // sort left half
+        Node* r = msort(NTM);    // sort right half
+
+        return mergelists(l, r);
+
+    }
+
+    Node* getmid(Node* node) {
+        if (!node) return node; // if list empty, return null
+        Node* one = node;      // mvoes one node at a time
+        Node* two = node->next;  // moves two nodes at a time
+
+        while (two && two->next) {  // loop until two at a time reaches the end
+            one = two->next;        // move one pointer one step
+            two = two->next->next;  // move two pointer two steps
+
+        }
+        return one;        // return middle
+    }
+
+
+    Node* mergelists(Node* l, Node* r) {
+        if (!r) return l;  // if list is empty
+        if (!l) return r;
+
+        if (r->data > l->data) {  // compare first element of both lists,(if right bigger than left)
+            if (r->prev) r->prev->next = r;  // adust pointer nodes
+            if (l->next) l->next->prev = l;
+
+            Node* TN = l->next;
+
+            l->next = r;    // merge lists
+            l->next->prev = l;
+
+            l->prev = NULL;    //update pointer
+            return l;      //return merge list
+        }
+        else { // if left bigger than right
+            if (l->prev) l->prev->next = l;// move nodes
+            if (r->next) r->next->prev = r;
+
+            Node* TN = r->next;
+
+            r->next = l;        // merge list
+            r->next->prev = r;
+
+            r->prev = NULL;  // update pointer
+            return r;
+        }
+
+    }
+
+    Node* partition(Node* l, Node* r) {
+        int pivot = r->data;        // last element as pivot
+        Node* curr = l->prev;        // curr is node before left
+
+        for (Node* chord = l; chord != r; chord = chord->next) { // loop low to high
+            if (chord->data <= pivot) {    // if current less than or equal to pivot
+                curr = (curr == nullptr) ? l : curr->next; // move curr to next node
+                if (chord->prev) curr->prev->next = curr; // adjust pointers to move nodes
+                if (curr->next) chord->next->prev = chord;
+
+                Node* TP = curr->prev;    // SWAP NODES
+
+                Node* TN = chord->next;
+
+                chord->next = curr;
+                chord->prev = TP;
+                curr->prev = chord;
+                curr->next = TN;
+            }
+        }
+
+        if (!curr) {      // if curr is = to null
+            curr = l;    // assign left to curr
+        }
+        else {        //else assign curr->next to curr
+            curr = curr->next;
+        }
+        if (r->next) r->next->prev = curr; // adjust pointer nodes
+        if (curr->prev) curr->prev->next = r;
+
+        Node* TN = r->next;          //swap nodes
+        Node* TP = curr->prev;
+
+        r->next = curr;
+        r->prev = TP;
+        curr->prev = r;
+        curr->next = TN;
+
+        return curr;          // return pivot element after partition
+
+    }
+
+    void quicksort(Node* l, Node* r) {
+        if (l == nullptr || r == nullptr || l == r || !r) return;
+
+
+        Node* pivot = partition(l, r);
+
+        quicksort(l, pivot->prev);       // recusrively sort left from pivot
+        quicksort(pivot->next, r);        // recursively sort right from pivot
+
+
+    }
+
+    ~DLL() {
+        Node* curr = head;
+        Node* next;
+
+        while (curr) {
+            next = curr->next;
+            delete curr;
+            curr = next;
+
+        }
+        head = tail = nullptr;
+    }
+
+
+};
+
+int main(int argc, char* argv[]) {
+    ArgumentManager am(argc, argv);
+
+    //string input = am.get("input");
+    //string output = am.get("output");
+
+    string input = "input1.txt";
+    string output = "output.txt";
+
+    ofstream ofs(output);
+    ifstream ifs(input);
+
+    if (!ifs.is_open()) {
+        cerr << "could not open input file" << endl;
+
+    }
+
+    if (!ofs.is_open()) {
+        cerr << "could not open output file" << endl;
+
+    }
+
+    string nums;        // store numbers
+    getline(ifs, nums);      // read first line
+
+    string method;    // store method of sorting
+    getline(ifs, method);     // read second line
+
+    if (method != "Selection" && method[0] != 'B' && method != "Insertion" && method != "Merge" && method != "Quick") {
+        ofs << "Input is invalid." << endl;
+        return 0;
+    }
+
+
+    DLL list;
+
+    stringstream ss(nums); // ss to parse nums
+    int num;
+    while (ss >> num) {    // read each num from ss
+        list.insert(num);    // insert nums into LL
+    }
+
+    //list.display();      // display first instance
+   
+    if (method[0] == 'S') {
+       
+        list.selection(ofs);
+    }
+    else if (method == "Insertion") {
+        list.insertion(ofs);
+    }
+    else if (method[0] == 'B') {
+        list.bubble(ofs);
+    }
+    else if (method == "Quick") {
+        list.quicksort(list.head, list.tail);
+    }
+    else if (method == "Merge") {
+        list.head = list.msort(list.head);    // update head of list
+    }
+    else {
+        ofs << "Input is invalid." << endl;
+    }
+
+    //list.display();      // display last instance
+
+    ifs.close();
+    ofs.close();
+    return 0;
+
+
+}
